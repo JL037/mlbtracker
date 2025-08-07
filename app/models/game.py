@@ -2,7 +2,7 @@ from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
-
+from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats
 class Game(Base):
     __tablename__ = "games"
 
@@ -25,6 +25,10 @@ class Game(Base):
     home_team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
     away_team_id: Mapped[int] = mapped_column(ForeignKey("teams.id"))
     
+
+    #Relationships
     home_team: Mapped["Team"] = relationship(foreign_keys=[home_team_id], back_populates="home_games")
     away_team: Mapped["Team"] = relationship(foreign_keys=[away_team_id], back_populates="away_games")
-    
+    pitcher_stats: Mapped[list["PitcherGameStats"]] = relationship(back_populates="game")
+    batter_stats: Mapped[list["BatterGameStats"]] = relationship(back_populates="game")
+    fielder_stats: Mapped[list["FielderGameStats"]] = relationship(back_populates="game")
