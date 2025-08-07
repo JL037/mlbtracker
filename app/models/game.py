@@ -2,7 +2,9 @@ from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
-from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats
+from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats, Season
+
+
 class Game(Base):
     __tablename__ = "games"
 
@@ -11,6 +13,7 @@ class Game(Base):
     date: Mapped[datetime]
     status: Mapped[str | None] = mapped_column(nullable=True)
     location: Mapped[str | None] = mapped_column(nullable=True)
+    season_id: Mapped[int] = mapped_column(ForeignKey("seasons.id"), nullable=False)
 
     scheduled_start_time: Mapped[datetime | None] = mapped_column(nullable=True)
     official_start_time: Mapped[datetime | None] = mapped_column(nullable=True)
@@ -32,3 +35,4 @@ class Game(Base):
     pitcher_stats: Mapped[list["PitcherGameStats"]] = relationship(back_populates="game")
     batter_stats: Mapped[list["BatterGameStats"]] = relationship(back_populates="game")
     fielder_stats: Mapped[list["FielderGameStats"]] = relationship(back_populates="game")
+    season: Mapped["Season"] = relationship(back_populates="games")
