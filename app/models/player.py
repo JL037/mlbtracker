@@ -1,8 +1,10 @@
-from sqlalchemy import String, Date
+from sqlalchemy import String, Date, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 from datetime import date
-from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats, PlayerTeamHistory
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats, PlayerTeamHistory
 
 class Player(Base):
     __tablename__ = "players"
@@ -11,7 +13,7 @@ class Player(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     birth_date: Mapped[date | None] = mapped_column(Date, nullable=True)
     position: Mapped[str] = mapped_column(String, nullable=True)
-    team_id: Mapped[int | None] = mapped_column(foreign_keys="teams.id", nullable=True)
+    team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"), nullable=True)
 
 
     #Relationships

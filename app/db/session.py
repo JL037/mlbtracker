@@ -2,13 +2,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from contextlib import contextmanager
 from typing import Generator
-from app.config import Settings
+from app.config import settings
 
 
 
 
 
-engine = create_engine(Settings.DATABASE_URL, echo=True, future=True)
+engine = create_engine(settings.DATABASE_URL, echo=True, future=True)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

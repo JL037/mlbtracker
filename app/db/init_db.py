@@ -1,7 +1,7 @@
 from app.db.session import engine
 from app.models.base import Base
 
-from app.models import game, player, team
+from app import models
 
 def init_db():
     print("Creating tables..")

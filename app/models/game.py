@@ -2,8 +2,9 @@ from datetime import datetime
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
-from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats, Season
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models import Team, PitcherGameStats, BatterGameStats, FielderGameStats, Season
 
 class Game(Base):
     __tablename__ = "games"

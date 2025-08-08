@@ -1,8 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 from sqlalchemy import ForeignKey
-from datetime import date
-from app.models import Player, Game, PlayerTeamHistory
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models import Player, Game, PlayerTeamHistory
 
 class Team(Base):
     __tablename__ = "teams"
