@@ -4,43 +4,43 @@
 
 ##  1. Project Setup
 
-- [ ] Create and activate virtual environment
-- [ ] Install required packages (`pip install -r requirements.txt`)
-- [ ] Create `.env` file with database credentials and secret keys
-- [ ] Initialize git repository
-- [ ] Create `.gitignore` and add virtualenv, `.env`, `__pycache__`, etc.
+- [x] Create and activate virtual environment
+- [x] Install required packages (`pip install -r requirements.txt`)
+- [x] Create `.env` file with database credentials and secret keys
+- [x] Initialize git repository
+- [x] Create `.gitignore` and add virtualenv, `.env`, `__pycache__`, etc.
 
 ---
 
 ##  2. Config Setup
 
-- [ ] Implement `config.py` to load env vars with `pydantic.BaseSettings`
-- [ ] Add environment variable validation and defaults
-- [ ] Hook up config in `main.py` and `db/session.py`
+- [x] Implement `config.py` to load env vars with `pydantic.BaseSettings`
+- [x] Add environment variable validation and defaults
+- [x] Hook up config in `main.py` and `db/session.py`
 
 ---
 
 ##  3. Database & ORM Setup
 
-- [ ] Implement `session.py` to create SQLAlchemy `SessionLocal` and `engine`
-- [ ] Implement `init_db.py` to run initial table creation from models
-- [ ] Set up `base.py` with `DeclarativeBase` for models
+- [x] Implement `session.py` to create SQLAlchemy `SessionLocal` and `engine`
+- [x] Implement `init_db.py` to run initial table creation from models
+- [x] Set up `base.py` with `DeclarativeBase` for models
 
 ---
 
 ##  4. Models
 
 ### `models/player.py`
-- [ ] Define `Player` model with fields: id, name, team_id, position, stats, etc.
-- [ ] Add SQLAlchemy relationships (e.g., to `Team`)
+- [x] Define `Player` model with fields: id, name, team_id, position, stats, etc.
+- [x] Add SQLAlchemy relationships (e.g., to `Team`)
 
 ### `models/team.py`
-- [ ] Define `Team` model with fields: id, name, location, abbreviation, etc.
-- [ ] Add reverse relationships to players and games
+- [x] Define `Team` model with fields: id, name, location, abbreviation, etc.
+- [x] Add reverse relationships to players and games
 
 ### `models/game.py`
-- [ ] Define `Game` model with fields: id, date, home_team_id, away_team_id, scores, etc.
-- [ ] Add relationships to `Team` and `Player`
+- [x] Define `Game` model with fields: id, date, home_team_id, away_team_id, scores, etc.
+- [x] Add relationships to `Team` and `Player`
 
 ---
 
