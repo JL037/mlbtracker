@@ -55,8 +55,8 @@ def map_games_from_schedule(dates: List[Dict[str, Any]], year: int) -> List[Game
             home = (teams.get("home") or {}).get("team") or {}
             away = (teams.get("away") or {}).get("team") or {}
 
-            if (home.get("sport") or {}).get("id") != 1 or (away.get("sport") or {}).get("id") != 1:
-                continue
+            # if (home.get("sport") or {}).get("id") != 1 or (away.get("sport") or {}).get("id") != 1:
+            #     continue
             
             rows.append(
                 GameIn(
