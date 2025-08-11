@@ -57,21 +57,36 @@ def upsert_games(rows: List[GameIn]) -> int:
     if not rows:
         return 0
     dicts = []
-    with get_session as sesh:
+    skipped = 0
+    with get_session() as sesh:
+        season_cache: dict[int, int] = {}
+        def season_id_for(y: int) -> int:
+            if y not in season_cache:
+                season_cache[y] = _season_id_by_year(sesh, y)
+            return season_cache[y]
         for row in rows:
-            season_id = _season_id_by_year(sesh, row.season_year)
+            if not (row.home_team_mlb_id and row.away_team_mlb_id):
+                skipped += 1
+                continue
+            home_pk = _team_id_by_team_id(sesh, row.home_team_mlb_id)
+            away_pk = _team_id_by_team_id(sesh, row.away_team_mlb_id)
             dicts.append({
                 "game_id": row.game_id,
                 "date": row.date,
                 "status": row.status,
                 "location": row.location,
-                "season_id": season_id,
+                "season_id": season_id_for(row.season_year),
                 "scheduled_start_time": row.scheduled_start_time,
                 "official_start_time": row.official_start_time,
+                "home_team_id": home_pk,
+                "away_team_id": away_pk,
             })
-            insert_stmt = insert(Game).values(dicts)
-            upsert_stmt = insert_stmt.on_conflict_do_update(
-                index_elements=[Game.game_id],
+        if not dicts:
+            return 0
+        
+        insert_stmt = insert(Game).values(dicts)
+        upsert_stmt = insert_stmt.on_conflict_do_update(
+            index_elements=[Game.game_id],
                 set_={
                     "date": insert_stmt.excluded.date,
                     "status": insert_stmt.excluded.status,
@@ -79,11 +94,13 @@ def upsert_games(rows: List[GameIn]) -> int:
                     "season_id": insert_stmt.excluded.season_id,
                     "scheduled_start_time": insert_stmt.excluded.scheduled_start_time,
                     "official_start_time": insert_stmt.excluded.official_start_time,
+                    "home_team_id": insert_stmt.excluded.home_team_id,
+                    "away_team_id": insert_stmt.excluded.away_team_id,
                 }
             )
-            sesh.execute(upsert_stmt)
-            sesh.commit()
-            return len(dicts)
+        sesh.execute(upsert_stmt)
+        sesh.commit()
+        return len(dicts)
         
     
         

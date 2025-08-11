@@ -41,23 +41,35 @@ class GameIn(BaseModel):
     season_year: int
     scheduled_start_time: Optional[str] = None
     official_start_time: Optional[str] = None
+    home_team_mlb_id: Optional[int] = None
+    away_team_mlb_id: Optional[int] = None
 
 
 def map_games_from_schedule(dates: List[Dict[str, Any]], year: int) -> List[GameIn]:
     rows: List[GameIn] = []
     for date in dates:
-        games = date.get("games", [])
-        for game in games:
+        for game in date.get("games", []):
+            if game.get("gameType") != "R":
+                continue
+            teams = game.get("teams") or {}
+            home = (teams.get("home") or {}).get("team") or {}
+            away = (teams.get("away") or {}).get("team") or {}
+
+            if (home.get("sport") or {}).get("id") != 1 or (away.get("sport") or {}).get("id") != 1:
+                continue
+            
             rows.append(
                 GameIn(
-                    game_id=game["gamePK"],
+                    game_id=game["gamePk"],
                     date=game.get("officialDate") or game.get("gameDate"),
                     status=(game.get("status") or {}).get("detailedState"),
                     location=(game.get("venue") or {}).get("name"),
                     season_year=year,
                     scheduled_start_time=game.get("gameDate"),
                     official_start_time=(game.get("OfficialStartTime") or None),
+                    home_team_mlb_id=home.get("id"),
+                    away_team_mlb_id=away.get("id"),
                 )
             )
-            return rows
+    return rows
 

@@ -3,7 +3,7 @@ from app.models.base import Base
 from sqlalchemy import ForeignKey
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from app.models import Player, Game, PlayerTeamHistory
+    from app.models import Player, Game, PlayerTeamHistory, TeamRecord
 
 class Team(Base):
     __tablename__ = "teams"
@@ -32,3 +32,11 @@ class Team(Base):
         cascade="all, delete-orphan"
     )
     player_history: Mapped[list["PlayerTeamHistory"]] = relationship(back_populates="team")
+    daily_records: Mapped[list["TeamRecord"]] = relationship(
+        "TeamRecord",
+        back_populates="team",
+        foreign_keys="TeamRecord.team_id",
+        primaryjoin="Team.id == TeamRecord.team_id",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )

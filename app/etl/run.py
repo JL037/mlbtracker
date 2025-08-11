@@ -24,9 +24,15 @@ def cmd_season(args):
     year = int(args.year)
     print(f"-> Loading season {year} schedule..")
     dates = get_schedule_for_season(year)
+    total_games = sum(len(d.get("games", [])) for d in dates)
+    print(f"Fetched {len(dates)} days, {total_games} games from API")
     games = map_games_from_schedule(dates, year)
+    print(f"Mapped {len(games)} games to GameIn rows")
     result = upsert_games(games)
     print(f"Upserted {result} games for {year}")
+    total_games = sum(len(d.get("games", [])) for d in dates)
+    print(f"Fetched {len(dates)} days, {total_games} games")
+
 
 def cmd_daily(args):
     today = dt.date.today()
