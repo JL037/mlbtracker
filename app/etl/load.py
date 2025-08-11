@@ -55,6 +55,32 @@ def _team_id_by_team_id(sesh: Session, mlb_team_id: int) -> int:
 
 CHUNK_SIZE = 500
 
+_STATUS_RANK = {"Final": 4, "Game Over": 4, "In Progress": 3, "Delayed": 2, "Pre-Game": 1}
+
+def _pick_better(a: dict, b: dict) -> dict:
+    # Higher status rank wins
+    ra = _STATUS_RANK.get((a.get("status") or ""), 0)
+    rb = _STATUS_RANK.get((b.get("status") or ""), 0)
+    if ra != rb:
+        return a if ra > rb else b
+    # Prefer presence of official_start_time
+    if bool(a.get("official_start_time")) != bool(b.get("official_start_time")):
+        return a if a.get("official_start_time") else b
+    # Prefer later scheduled_start_time
+    sa = a.get("scheduled_start_time") or ""
+    sb = b.get("scheduled_start_time") or ""
+    return a if sa >= sb else b
+
+def _dedupe_by_game_id(rows: list[dict]) -> list[dict]:
+    by_id: dict[int, dict] = {}
+    for d in rows:
+        gid = d["game_id"]
+        if gid in by_id:
+            by_id[gid] = _pick_better(by_id[gid], d)
+        else:
+            by_id[gid] = d
+    return list(by_id.values())
+
 def upsert_games(rows: List[GameIn]) -> int:
     if not rows:
         return 0
@@ -72,8 +98,6 @@ def upsert_games(rows: List[GameIn]) -> int:
             if not (row.home_team_mlb_id and row.away_team_mlb_id):
                 skipped += 1
                 continue
-
-            # If these helpers can return None, keep the guard; if they raise, wrap in try/except.
             home_pk = _team_id_by_team_id(sesh, row.home_team_mlb_id)
             away_pk = _team_id_by_team_id(sesh, row.away_team_mlb_id)
             if home_pk is None or away_pk is None:
@@ -97,6 +121,13 @@ def upsert_games(rows: List[GameIn]) -> int:
                 print(f"Skipped {skipped} rows with missing team ids.")
             return 0
 
+       
+        original_len = len(dicts)
+        dicts = _dedupe_by_game_id(dicts)
+        removed = original_len - len(dicts)
+        if removed:
+            print(f"Removed {removed} duplicate game_ids before upsert.")
+
         total = 0
         for i in range(0, len(dicts), CHUNK_SIZE):
             chunk = dicts[i:i + CHUNK_SIZE]
@@ -115,16 +146,9 @@ def upsert_games(rows: List[GameIn]) -> int:
                 }
             )
             sesh.execute(upsert_stmt)
-            sesh.commit()  # keep transactions small
+            sesh.commit()
             total += len(chunk)
-            # optional progress:
-            # print(f"Upserted {i + len(chunk)}/{len(dicts)}... (skipped {skipped})")
 
         if skipped:
             print(f"Skipped {skipped} rows with missing team ids.")
-
         return total
-
-        
-    
-        
