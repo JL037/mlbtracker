@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Dict, List, Optional, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+from datetime import datetime, date, timezone
 
 class TeamIn(BaseModel):
     team_id: int = Field(..., alias="id")
@@ -66,7 +67,7 @@ def map_games_from_schedule(dates: List[Dict[str, Any]], year: int) -> List[Game
                     location=(game.get("venue") or {}).get("name"),
                     season_year=year,
                     scheduled_start_time=game.get("gameDate"),
-                    official_start_time=(game.get("OfficialStartTime") or None),
+                    official_start_time=(game.get("officialStartTime") or None),
                     home_team_mlb_id=home.get("id"),
                     away_team_mlb_id=away.get("id"),
                 )

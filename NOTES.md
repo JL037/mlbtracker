@@ -47,16 +47,16 @@
 ##  5. ETL Pipeline
 
 ### `etl/fetch_data.py`
-- [ ] Implement logic to call external API or load from CSV
+- [x] Implement logic to call external API or load from CSV
 - [ ] Add logging and error handling for fetch process
 
 ### `etl/transform.py`
-- [ ] Write data normalization and parsing functions
+- [x] Write data normalization and parsing functions
 - [ ] Clean and validate raw data
 
 ### `etl/load.py`
-- [ ] Insert transformed data into database via SQLAlchemy
-- [ ] Use sessions/transactions for batch inserts
+- [x] Insert transformed data into database via SQLAlchemy
+- [x] Use sessions/transactions for batch inserts
 
 ---
 

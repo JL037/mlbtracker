@@ -32,11 +32,12 @@ def upsert_teams(rows: List[TeamIn]) -> int:
 def upsert_seasons(rows: List[SeasonIn]) -> int:
     if not rows:
         return 0
+    
     dicts = [row.model_dump() for row in rows]
     with get_session() as sesh:
         insert_stmt = pg_insert(Season).values(dicts)
         upsert_stmt = insert_stmt.on_conflict_do_nothing(index_elements=[Season.year])
-        sesh.execute(insert_stmt)
+        sesh.execute(upsert_stmt)
         sesh.commit()
         return len(dicts)
     
